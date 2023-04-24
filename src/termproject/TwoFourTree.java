@@ -53,6 +53,41 @@ public class TwoFourTree
     }
 
     /**
+     * Private helper method to find the first key greater than or equal to a 
+     * given key in a node
+     * @param node - the node to be searched
+     * @param key - the key to search for
+     * @return the index of the first key greater than or equal to the given key
+     */
+    private int findFirstGreaterThanOrEqual(TFNode node, Object key) {
+        int i = 0;
+        for (i = 0; i < node.getNumItems(); i++) {
+            if (treeComp.isGreaterThanOrEqualTo(node.getItem(i).key(), key)) {
+                break;
+            }
+        }
+        return i;
+    }
+
+    /**
+     * Private helper method which gives the position in a node's parent's
+     * child array of a given node.
+     * @param node - the ndoe to be checked
+     * @return the index of that node in its parent's child array
+     */
+    private int whichChild(TFNode node) {
+        TFNode parent = node.getParent();
+
+        int i;
+        for (i = 0; i <= parent.getNumItems(); i++) {
+            if (parent.getChild(i) == node) {
+                break;
+            }
+        }
+        return i;
+    }
+
+    /**
      * Searches dictionary to determine if key is present, then
      * removes and returns corresponding object
      * @param key of data to be removed
@@ -67,60 +102,81 @@ public class TwoFourTree
         Comparator myComp = new IntegerComparator();
         TwoFourTree myTree = new TwoFourTree(myComp);
 
-        Integer myInt1 = new Integer(47);
+        Integer myInt1 = 47;
         myTree.insertElement(myInt1, myInt1);
-        Integer myInt2 = new Integer(83);
+        //myTree.printAllElements();
+
+        Integer myInt2 = 83;
         myTree.insertElement(myInt2, myInt2);
-        Integer myInt3 = new Integer(22);
+        //myTree.printAllElements();
+
+        Integer myInt3 = 22;
         myTree.insertElement(myInt3, myInt3);
+        //myTree.printAllElements();
 
-        Integer myInt4 = new Integer(16);
+        Integer myInt4 = 16;
         myTree.insertElement(myInt4, myInt4);
+        //myTree.printAllElements();
 
-        Integer myInt5 = new Integer(49);
+        Integer myInt5 = 49;
         myTree.insertElement(myInt5, myInt5);
+        //myTree.printAllElements();
 
-        Integer myInt6 = new Integer(100);
+        Integer myInt6 = 100;
         myTree.insertElement(myInt6, myInt6);
+        //myTree.printAllElements();
 
-        Integer myInt7 = new Integer(38);
+        Integer myInt7 = 38;
         myTree.insertElement(myInt7, myInt7);
+        //myTree.printAllElements();
 
-        Integer myInt8 = new Integer(3);
+        Integer myInt8 = 3;
         myTree.insertElement(myInt8, myInt8);
+        //myTree.printAllElements();
 
-        Integer myInt9 = new Integer(53);
+        Integer myInt9 = 53;
         myTree.insertElement(myInt9, myInt9);
+        //myTree.printAllElements();
 
-        Integer myInt10 = new Integer(66);
+        Integer myInt10 = 66;
         myTree.insertElement(myInt10, myInt10);
+        //myTree.printAllElements();
 
-        Integer myInt11 = new Integer(19);
+        Integer myInt11 = 19;
         myTree.insertElement(myInt11, myInt11);
+        //myTree.printAllElements();
 
-        Integer myInt12 = new Integer(23);
+        Integer myInt12 = 23;
         myTree.insertElement(myInt12, myInt12);
+        //myTree.printAllElements();
 
-        Integer myInt13 = new Integer(24);
+        Integer myInt13 = 24;
         myTree.insertElement(myInt13, myInt13);
+        //myTree.printAllElements();
 
-        Integer myInt14 = new Integer(88);
+        Integer myInt14 = 88;
         myTree.insertElement(myInt14, myInt14);
+        //myTree.printAllElements();
 
-        Integer myInt15 = new Integer(1);
+        Integer myInt15 = 1;
         myTree.insertElement(myInt15, myInt15);
+        //myTree.printAllElements();
 
-        Integer myInt16 = new Integer(97);
+        Integer myInt16 = 97;
         myTree.insertElement(myInt16, myInt16);
+        //myTree.printAllElements();
 
-        Integer myInt17 = new Integer(94);
+        Integer myInt17 = 94;
         myTree.insertElement(myInt17, myInt17);
+        //myTree.printAllElements();
 
-        Integer myInt18 = new Integer(35);
+        Integer myInt18 = 35;
         myTree.insertElement(myInt18, myInt18);
+        //myTree.printAllElements();
 
-        Integer myInt19 = new Integer(51);
+        Integer myInt19 = 51;
         myTree.insertElement(myInt19, myInt19);
+        //myTree.printAllElements();
 
         myTree.printAllElements();
         System.out.println("done");
@@ -130,13 +186,13 @@ public class TwoFourTree
 
 
         for (int i = 0; i < TEST_SIZE; i++) {
-            myTree.insertElement(new Integer(i), new Integer(i));
+            myTree.insertElement(i, i);
             //          myTree.printAllElements();
             //         myTree.checkTree();
         }
         System.out.println("removing");
         for (int i = 0; i < TEST_SIZE; i++) {
-            int out = (Integer) myTree.removeElement(new Integer(i));
+            int out = (Integer) myTree.removeElement(i);
             if (out != i) {
                 throw new TwoFourTreeException("main: wrong element removed");
             }
