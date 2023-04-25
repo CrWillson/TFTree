@@ -1,5 +1,7 @@
 package termproject;
 
+import java.io.InvalidObjectException;
+
 /**
  * Term Project 2-4 Trees
  *
@@ -22,14 +24,14 @@ public interface Dictionary {
     * @param key to be searched for
     * @return object corresponding to key; null if not found
     */
-    public Object findElement (Object key);
+    public Object findElement (Object key) throws InvalidObjectException;
 
     /**
     * Inserts provided element into the Dictionary
     * @param key of object to be inserted
     * @param element to be inserted
     */
-    public void insertElement (Object key, Object element);
+    public void insertElement (Object key, Object element) throws InvalidObjectException;
 
     /**
     * Searches dictionary to determine if key is present, then
@@ -38,5 +40,5 @@ public interface Dictionary {
     * @return object corresponding to key
     * @exception ElementNotFoundException if the key is not in dictionary
     */
-    public Object removeElement (Object key) throws ElementNotFoundException;
+    public Object removeElement (Object key) throws ElementNotFoundException, InvalidObjectException;
 }
