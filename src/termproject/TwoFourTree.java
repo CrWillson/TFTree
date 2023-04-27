@@ -2,8 +2,6 @@ package termproject;
 
 import java.util.Random;
 
-import javax.naming.directory.SearchControls;
-
 import java.util.List;
 import java.util.ArrayList;
 
@@ -45,13 +43,12 @@ public class TwoFourTree implements Dictionary {
      * Searches dictionary to determine if key is present
      * @param key to be searched for
      * @return object corresponding to key; null if not found
+     * @exception InvalidObjectException if the key is not comparable by the comparator
      */
-    public Object findElement(Object key) {
-        /*
+    public Object findElement(Object key) throws InvalidObjectException {
         if (!treeComp.isComparable(key)) {
             throw new InvalidObjectException("Invalid key given");
         }
-        */
 
         TFNode currNode = root();
 
@@ -73,21 +70,29 @@ public class TwoFourTree implements Dictionary {
      * Inserts provided element into the Dictionary
      * @param key of object to be inserted
      * @param element to be inserted
+     * @exception InvalidObjectException if the key is not comparable by the comparator
      */
-    public void insertElement(Object key, Object element) {
+    public void insertElement(Object key, Object element) throws InvalidObjectException {
+        if (!treeComp.isComparable(key)) {
+            throw new InvalidObjectException("Invalid key given");
+        }
+
         TFNode currNode = root();
 
+        // create a root if the tree is empty
         if (root() == null) {
             setRoot(new TFNode());
             root().addItem(0, new Item(key, element));
         }
         else {
+            // find the leaf to insert in
             int nextInd = findFirstGreaterThanOrEqual(currNode, key);
             while (currNode.getChild(nextInd) != null) {
                 currNode = currNode.getChild(nextInd);
                 nextInd = findFirstGreaterThanOrEqual(currNode, key);
             }
 
+            // insert and fix overflow
             currNode.insertItem(nextInd, new Item(key, element));
 
             if (currNode.getNumItems() > 3) {
@@ -99,7 +104,68 @@ public class TwoFourTree implements Dictionary {
     }
 
     /**
-     * Helper method to fix overflow
+     * Searches dictionary to determine if key is present, then
+     * removes and returns corresponding object
+     * @param key of data to be removed
+     * @return object corresponding to key
+     * @exception ElementNotFoundException if the key is not in dictionary
+     * @exception InvalidObjectException if the key is not comparable by the comparator
+     */
+    public Object removeElement(Object key) throws ElementNotFoundException, InvalidObjectException {
+        if (!treeComp.isComparable(key)) {
+            throw new InvalidObjectException("Invalid key given");
+        }
+
+        TFNode currNode = root();
+        int currInd = -1;
+
+        // find the item to remove
+        boolean found = false;
+        while (currNode != null && !found) {
+            for (currInd = 0; currInd < currNode.getNumItems(); currInd++) {
+                if (treeComp.isEqual(currNode.getItem(currInd).key(), key)) {
+                    found = true;
+                    break;
+                }
+            }
+            if (found) { break; }
+
+            int nextInd = findFirstGreaterThanOrEqual(currNode, key);
+            currNode = currNode.getChild(nextInd);
+        }
+        if (currNode == null) {
+            throw new ElementNotFoundException("Key not found");
+        } 
+
+        // remove and replace with the in order successor
+        Object removedElement = null;
+        if (currNode.getChild(0) == null) {
+            removedElement = currNode.removeItem(currInd).element();
+
+            if (currNode.getNumItems() == 0) {
+                fixUnderflow(currNode);
+            }
+        }
+        else {
+            TFNode successor = currNode.getChild(currInd + 1);
+            while (successor != null && successor.getChild(0) != null) {
+                successor = successor.getChild(0);
+            }
+
+            removedElement = currNode.deleteItem(currInd).element();
+            currNode.addItem(currInd, successor.removeItem(0));
+
+            if (successor.getNumItems() == 0) {
+                fixUnderflow(successor);
+            }
+        }
+
+        size--;
+        return removedElement;
+    }
+
+    /**
+     * Private helper method used by insertElement to fix an overflowed node
      * @param node - the overflowed node
      */
     private void fixOverflow(TFNode node) {
@@ -123,6 +189,11 @@ public class TwoFourTree implements Dictionary {
         }
     }
 
+    /**
+     * Private helper method that takes an overflowed node and splits it in two
+     * @param node - the overflowed node
+     * @param parentInd - the node's index in its parent node
+     */
     private void splitNode(TFNode node, int parentInd) {
         TFNode split = new TFNode();
 
@@ -180,60 +251,10 @@ public class TwoFourTree implements Dictionary {
     }
 
     /**
-     * Searches dictionary to determine if key is present, then
-     * removes and returns corresponding object
-     * @param key of data to be removed
-     * @return object corresponding to key
-     * @exception ElementNotFoundException if the key is not in dictionary
+     * Private helper method used by removeElement used to fix an
+     * underflowed node.
+     * @param node - the underflowed node
      */
-    public Object removeElement(Object key) throws ElementNotFoundException {
-        TFNode currNode = root();
-        int currInd = -1;
-
-        boolean found = false;
-        while (currNode != null && !found) {
-            for (currInd = 0; currInd < currNode.getNumItems(); currInd++) {
-                if (treeComp.isEqual(currNode.getItem(currInd).key(), key)) {
-                    found = true;
-                    break;
-                }
-            }
-            if (found) { break; }
-
-            int nextInd = findFirstGreaterThanOrEqual(currNode, key);
-            currNode = currNode.getChild(nextInd);
-        }
-        if (currNode == null) {
-            throw new ElementNotFoundException("Key not found");
-        } 
-
-
-        Object removedElement = null;
-        if (currNode.getChild(0) == null) {
-            removedElement = currNode.removeItem(currInd).element();
-
-            if (currNode.getNumItems() == 0) {
-                fixUnderflow(currNode);
-            }
-        }
-        else {
-            TFNode successor = currNode.getChild(currInd + 1);
-            while (successor != null && successor.getChild(0) != null) {
-                successor = successor.getChild(0);
-            }
-
-            removedElement = currNode.deleteItem(currInd).element();
-            currNode.addItem(currInd, successor.removeItem(0));
-
-            if (successor.getNumItems() == 0) {
-                fixUnderflow(successor);
-            }
-        }
-
-        size--;
-        return removedElement;
-    }
-
     private void fixUnderflow(TFNode node) {
         if (node != root()) {
             int parentInd = whichChild(node);
@@ -295,6 +316,7 @@ public class TwoFourTree implements Dictionary {
                 }
             }
         }
+        // special root case
         else {
             setRoot(root().getChild(0));
             if (root() != null) {
@@ -341,9 +363,9 @@ public class TwoFourTree implements Dictionary {
         System.out.println("done");
 */
         myTree = new TwoFourTree(myComp);
-        Random rng = new Random(0);
+        Random rng = new Random();
         List<Integer> list = new ArrayList<>();
-        final int TEST_SIZE = 5000000;
+        final int TEST_SIZE = 10000000;
 
         long startTime = System.nanoTime();
         long searchTime = 0l;
@@ -353,8 +375,11 @@ public class TwoFourTree implements Dictionary {
             int nextRand = rng.nextInt(TEST_SIZE);
             myTree.insertElement(nextRand, nextRand);
             list.add(nextRand);
+            if (myTree.size() % (TEST_SIZE / 50) == 0) {
+                System.out.print(".");
+            }
         }
-        System.out.println("Inserting complete. Removing all elements...");
+        System.out.println("\nInserting complete. Removing all elements...");
         while (!myTree.isEmpty()) {
             long searchStart = System.nanoTime();
             int poppedItem = list.remove(rng.nextInt(list.size()));
@@ -367,7 +392,7 @@ public class TwoFourTree implements Dictionary {
                 return;
             }
             /* */
-            if (myTree.size() % (TEST_SIZE / 25) == 0) {
+            if (myTree.size() % (TEST_SIZE / 50) == 0) {
                 System.out.print(".");
             }
             /* */
