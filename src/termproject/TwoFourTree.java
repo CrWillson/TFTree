@@ -2,6 +2,8 @@ package termproject;
 
 import java.util.Random;
 
+import javax.xml.namespace.QName;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -329,89 +331,82 @@ public class TwoFourTree implements Dictionary {
         Comparator myComp = new IntegerComparator();
         TwoFourTree myTree = new TwoFourTree(myComp);
 
-/*
-        Random rng = new Random();
+        System.out.println("Beginning small scale fixed test...");
+        myTree.insertElement(19, 19);
+        myTree.insertElement(45, 45);
+        myTree.insertElement(63, 63);
+        myTree.insertElement(28, 28);
+        myTree.insertElement(10, 10);
+        myTree.insertElement(67, 67);
+        myTree.insertElement(45, 45);
+        myTree.insertElement(1, 1);
+        myTree.insertElement(97, 97);
+        myTree.insertElement(25, 25);
+        myTree.insertElement(26, 26);
+        myTree.insertElement(100, 100);
 
-        for (int i = 0; i < 25; i++) {
-            int rand = rng.nextInt(50);
-            myTree.insertElement(rand, rand);
-        }
         myTree.printAllElements();
         myTree.checkTree();
-        System.out.println("done");
-*/
-/*
-        myTree = new TwoFourTree(myComp);
-        final int TEST_SIZE = 10000;
+        System.out.println("Tree size: " + myTree.size());
 
+        Object test1 = myTree.findElement(45);
+        System.out.println("Searched key 45: " + test1);
+        Object test2 = myTree.findElement(69);
+        System.out.println("Searched key 69: " + test2);
+        Object test3 = myTree.findElement(63);
+        System.out.println("Searched key 63: " + test3);
+        Object test4 = myTree.findElement(101);
+        System.out.println("Searched key 101: " + test4);
+        Object test5 = myTree.findElement(1);
+        System.out.println("Searched key 1: " + test5);
 
-        for (int i = 0; i < TEST_SIZE; i++) {
-            myTree.insertElement(i, i);
-            //          myTree.printAllElements();
-            //         myTree.checkTree();
-        }
-        System.out.println("removing");
-        for (int i = 0; i < TEST_SIZE; i++) {
-            int out = (Integer) myTree.removeElement(i);
-            if (out != i) {
-                throw new TwoFourTreeException("main: wrong element removed");
-            }
-            if (i > TEST_SIZE - 15) {
-                myTree.printAllElements();
-            }
-        }
-        System.out.println("done");
-*/
+        System.out.println("Removing some elements...");
+        myTree.removeElement(10);
+        myTree.removeElement(45);
+        myTree.removeElement(25);
+        myTree.removeElement(63);
+
+        myTree.printAllElements();
+        myTree.checkTree();
+
+        System.out.println("Beginning large scale random test...");
         myTree = new TwoFourTree(myComp);
-        Random rng = new Random();
-        List<Integer> list = new ArrayList<>();
-        final int TEST_SIZE = 10000000;
+        Random master = new Random();
+        long randomSeed = master.nextInt(1000000000);
+        Random rng = new Random(randomSeed);
+        final int TEST_SIZE = 100000000;
 
         long startTime = System.nanoTime();
-        long searchTime = 0l;
         
         System.out.println("Inserting " + TEST_SIZE + " elements...");
         for (int i = 0; i < TEST_SIZE; i++) {
             int nextRand = rng.nextInt(TEST_SIZE);
             myTree.insertElement(nextRand, nextRand);
-            list.add(nextRand);
             if (myTree.size() % (TEST_SIZE / 50) == 0) {
                 System.out.print(".");
             }
         }
+
+        rng = new Random(randomSeed);
         System.out.println("\nInserting complete. Removing all elements...");
         while (!myTree.isEmpty()) {
-            long searchStart = System.nanoTime();
-            int poppedItem = list.remove(rng.nextInt(list.size()));
-            long searchEnd = System.nanoTime();
-            searchTime += searchEnd - searchStart;
-
-            int removedItem = (Integer)myTree.removeElement(poppedItem);
-            if (poppedItem != removedItem) {
-                System.out.println("Incorrect item removed. Expected " + poppedItem + " removed " + removedItem + ".");
+            int nextRand = rng.nextInt(TEST_SIZE);
+            int removedItem = (Integer)myTree.removeElement(nextRand);
+            if (nextRand != removedItem) {
+                System.out.println("Incorrect item removed. Expected " + nextRand + " removed " + removedItem + ".");
                 return;
             }
-            /* */
+
             if (myTree.size() % (TEST_SIZE / 50) == 0) {
                 System.out.print(".");
             }
-            /* */
-
-            /* *
-            if (myTree.size() < 15) {
-                myTree.printAllElements();
-                System.out.println("");
-            }
-            /* */
         }
         System.out.println("\nRemoval complete.");
         
         long endTime = System.nanoTime();
         long totalTime = (endTime - startTime) / 1000000;
-        long elapsedTime = (endTime - startTime - searchTime) / 1000000;
 
         System.out.println("Total time: " + totalTime + " ms");
-        System.out.println("Total time w/o list access: " + elapsedTime + " ms");
     }
 
     public void printAllElements() {
