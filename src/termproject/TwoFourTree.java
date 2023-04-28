@@ -141,6 +141,7 @@ public class TwoFourTree implements Dictionary {
 
         // remove and replace with the in order successor
         Object removedElement = null;
+        // the node is a leaf
         if (currNode.getChild(0) == null) {
             removedElement = currNode.removeItem(currInd).element();
 
@@ -148,6 +149,7 @@ public class TwoFourTree implements Dictionary {
                 fixUnderflow(currNode);
             }
         }
+        // the node has an in order successor
         else {
             TFNode successor = currNode.getChild(currInd + 1);
             while (successor != null && successor.getChild(0) != null) {
@@ -327,6 +329,11 @@ public class TwoFourTree implements Dictionary {
         }
     }
 
+    /**
+     * main method used for testing the TFTree. Runs a small scale fixed test
+     * and a large scale randomized test.
+     * @param args
+     */
     public static void main(String[] args) {
         Comparator myComp = new IntegerComparator();
         TwoFourTree myTree = new TwoFourTree(myComp);
@@ -374,7 +381,7 @@ public class TwoFourTree implements Dictionary {
         Random master = new Random();
         long randomSeed = master.nextInt(1000000000);
         Random rng = new Random(randomSeed);
-        final int TEST_SIZE = 100000000;
+        final int TEST_SIZE = 10000000;
 
         long startTime = System.nanoTime();
         
