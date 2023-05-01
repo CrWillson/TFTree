@@ -376,7 +376,7 @@ public class TwoFourTree implements Dictionary {
         Random master = new Random();
         long randomSeed = master.nextInt(1000000000);
         Random rng = new Random(randomSeed);
-        final int TEST_SIZE = 10000000;
+        final int TEST_SIZE = 100000000;
 
         long startTime = System.nanoTime();
         
