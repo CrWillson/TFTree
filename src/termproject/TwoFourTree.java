@@ -2,18 +2,12 @@ package termproject;
 
 import java.util.Random;
 
-import javax.xml.namespace.QName;
-
-import java.util.List;
-import java.io.InvalidObjectException;
-import java.util.ArrayList;
-
 /**
  * Title:        Term Project 2-4 Trees
  * Description:
  * Copyright:    Copyright (c) 2001
  * Company:
- * @author
+ * @author Caleb Willson and Joshua Cappella
  * @version 1.0
  */
 public class TwoFourTree implements Dictionary {
