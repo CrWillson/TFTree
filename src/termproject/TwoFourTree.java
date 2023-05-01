@@ -332,6 +332,7 @@ public class TwoFourTree implements Dictionary {
     public static void main(String[] args) {
         Comparator myComp = new IntegerComparator();
         TwoFourTree myTree = new TwoFourTree(myComp);
+        try{
 
         System.out.println("Beginning small scale fixed test...");
         myTree.insertElement(19, 19);
@@ -382,7 +383,8 @@ public class TwoFourTree implements Dictionary {
         
         System.out.println("Inserting " + TEST_SIZE + " elements...");
         for (int i = 0; i < TEST_SIZE; i++) {
-            int nextRand = rng.nextInt(TEST_SIZE);
+            int nextRand = rng.nextInt(TEST_SIZE / 10);
+            myTree.checkTree();
             myTree.insertElement(nextRand, nextRand);
             if (myTree.size() % (TEST_SIZE / 50) == 0) {
                 System.out.print(".");
@@ -392,23 +394,32 @@ public class TwoFourTree implements Dictionary {
         rng = new Random(randomSeed);
         System.out.println("\nInserting complete. Removing all elements...");
         while (!myTree.isEmpty()) {
-            int nextRand = rng.nextInt(TEST_SIZE);
+            int nextRand = rng.nextInt(TEST_SIZE / 10);
             int removedItem = (Integer)myTree.removeElement(nextRand);
+            myTree.checkTree();
             if (nextRand != removedItem) {
-                System.out.println("Incorrect item removed. Expected " + nextRand + " removed " + removedItem + ".");
-                return;
+                throw new TFNodeException("Invalid item removed");
+                //System.out.println("Incorrect item removed. Expected " + nextRand + " removed " + removedItem + ".");
+                //return;
             }
 
             if (myTree.size() % (TEST_SIZE / 50) == 0) {
                 System.out.print(".");
             }
+            if (myTree.size() < 30) {
+                myTree.printAllElements();
+                System.out.println("----------------------");
+            }
         }
+        
         System.out.println("\nRemoval complete.");
         
         long endTime = System.nanoTime();
         long totalTime = (endTime - startTime) / 1000000;
 
         System.out.println("Total time: " + totalTime + " ms");
+        }
+        catch (InvalidObjectException e) {}
     }
 
     public void printAllElements() {
